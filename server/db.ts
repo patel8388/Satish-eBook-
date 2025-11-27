@@ -1,6 +1,6 @@
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users } from "../drizzle/schema";
+import { InsertUser, users, books, readingProgress, bookmarks, userPreferences } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -89,4 +89,48 @@ export async function getUserByOpenId(openId: string) {
   return result.length > 0 ? result[0] : undefined;
 }
 
-// TODO: add feature queries here as your schema grows.
+export async function getUserBooks(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(books).where(eq(books.userId, userId));
+}
+
+export async function getBookById(bookId: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(books).where(eq(books.id, bookId)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+export async function getReadingProgress(userId: number, bookId: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db
+    .select()
+    .from(readingProgress)
+    .where(and(eq(readingProgress.userId, userId), eq(readingProgress.bookId, bookId)))
+    .limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+export async function getBookmarks(userId: number, bookId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db
+    .select()
+    .from(bookmarks)
+    .where(and(eq(bookmarks.userId, userId), eq(bookmarks.bookId, bookId)));
+}
+
+export async function getUserPreferences(userId: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db
+    .select()
+    .from(userPreferences)
+    .where(eq(userPreferences.userId, userId))
+    .limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+// TODO: add more feature queries here as your schema grows.
