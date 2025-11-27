@@ -9,17 +9,17 @@
 - [x] Logout functionality
 
 ### File Management
-- [ ] Upload PDF files to cloud storage
-- [ ] Upload EPUB files to cloud storage
-- [ ] List user's uploaded files
+- [x] Upload PDF files to cloud storage
+- [x] Upload EPUB files to cloud storage
+- [x] List user's uploaded files
 - [ ] Delete files
-- [ ] File metadata storage (name, size, format, upload date)
+- [x] File metadata storage (name, size, format, upload date)
 
 ### Reading Features
-- [ ] PDF file rendering and reading
-- [ ] EPUB file rendering and reading
-- [ ] Reading progress tracking (current page/position)
-- [ ] Bookmarks/favorites functionality
+- [x] PDF file rendering and reading
+- [x] EPUB file rendering and reading
+- [x] Reading progress tracking (current page/position)
+- [x] Bookmarks/favorites functionality
 - [ ] Reading history
 
 ### User Interface
@@ -44,7 +44,7 @@
 
 ### Backend (Node.js/Express + tRPC)
 - [x] User authentication routes
-- [ ] File upload endpoint
+- [x] File upload endpoint
 - [x] File listing endpoint
 - [x] Reading progress tracking API
 - [x] Bookmarks API
@@ -58,14 +58,15 @@
 - [x] User preferences table
 
 ### Frontend (React)
-- [ ] Authentication UI
-- [ ] Dashboard/Library view
-- [ ] File upload UI
-- [ ] PDF/EPUB reader component
-- [ ] Navigation and routing
+- [x] Authentication UI
+- [x] Dashboard/Library view
+- [x] File upload UI
+- [x] PDF/EPUB reader component
+- [x] Navigation and routing
 
 ## Testing & Quality
 - [x] Unit tests for API endpoints
+- [x] Upload functionality tests
 - [ ] Integration tests
 - [ ] UI/UX testing
 - [ ] Cross-browser compatibility

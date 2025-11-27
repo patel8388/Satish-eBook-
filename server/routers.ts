@@ -5,6 +5,7 @@ import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
 import { eq, and } from "drizzle-orm";
 import { getDb } from "./db";
 import { books, readingProgress, bookmarks } from "../drizzle/schema";
+import { uploadRouter } from "./upload";
 
 export const appRouter = router({
     // if you need to use socket.io, read and register route in server/_core/index.ts, all api should start with '/api/' so that the gateway can route correctly
@@ -83,6 +84,9 @@ export const appRouter = router({
           .where(and(eq(bookmarks.userId, ctx.user.id), eq(bookmarks.bookId, input.bookId)));
       }),
   }),
+
+  // File upload
+  upload: uploadRouter,
 });
 
 export type AppRouter = typeof appRouter;
