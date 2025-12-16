@@ -2,7 +2,8 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
-import { BookOpen, ChevronLeft, ChevronRight, Settings, Bookmark, LogOut } from "lucide-react";
+import { BookOpen, ChevronLeft, Settings, Bookmark, LogOut, Download } from "lucide-react";
+import { UniversalFileViewer } from "@/components/UniversalFileViewer";
 import { trpc } from "@/lib/trpc";
 import { useLocation } from "wouter";
 import { useState, useEffect } from "react";
@@ -12,10 +13,11 @@ export default function Reader() {
   const { user, logout } = useAuth();
   const [, navigate] = useLocation();
   const [bookId, setBookId] = useState<number | null>(null);
-  const [currentPage, setCurrentPage] = useState(0);
   const [fontSize, setFontSize] = useState(16);
   const [theme, setTheme] = useState<"light" | "dark" | "sepia">("light");
   const [showSettings, setShowSettings] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
   // Extract bookId from URL
   useEffect(() => {
@@ -44,16 +46,25 @@ export default function Reader() {
     navigate("/");
   };
 
-  const handleNextPage = () => {
-    setCurrentPage((prev) => prev + 1);
-  };
-
-  const handlePrevPage = () => {
-    setCurrentPage((prev) => Math.max(0, prev - 1));
-  };
-
   const handleBookmark = () => {
-    toast.success("Bookmark added!");
+    toast.success("Bookmark added at page " + currentPage);
+  };
+
+  const handleDownload = () => {
+    if (book) {
+      const link = document.createElement("a");
+      link.href = book.fileUrl;
+      link.download = book.title;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      toast.success("Download started");
+    }
+  };
+
+  const handlePageChange = (page: number, total: number) => {
+    setCurrentPage(page);
+    setTotalPages(total);
   };
 
   if (!user) {
@@ -94,7 +105,7 @@ export default function Reader() {
   return (
     <div className={`min-h-screen ${themeClasses[theme]}`}>
       {/* Header */}
-      <nav className={`${theme === "dark" ? "bg-gray-800" : "bg-white"} shadow-sm`}>
+      <nav className={`${theme === "dark" ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"} border-b shadow-sm`}>
         <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center gap-4">
             <Button
@@ -119,6 +130,14 @@ export default function Reader() {
               title="Add bookmark"
             >
               <Bookmark className="w-5 h-5" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleDownload}
+              title="Download book"
+            >
+              <Download className="w-5 h-5" />
             </Button>
             <Button
               variant="ghost"
@@ -171,67 +190,43 @@ export default function Reader() {
       )}
 
       {/* Reader Content */}
-      <main className="max-w-4xl mx-auto px-4 py-8">
-        <Card className={`${themeClasses[theme]} p-8 min-h-96 mb-8`}>
-          <div style={{ fontSize: `${fontSize}px`, lineHeight: "1.8" }}>
-            <p className="text-center text-gray-500 mb-8">
-              📖 Reader Preview - Page {currentPage + 1}
-            </p>
-            <p className="leading-relaxed">
-              This is where the PDF or EPUB content would be displayed. The reader would render
-              the actual book content here with support for text selection, highlighting, and
-              annotations. The current implementation shows the reading interface structure.
-            </p>
-            <p className="mt-4 leading-relaxed">
-              Reading progress: {progress ? `${progress.percentRead}%` : "0%"}
-            </p>
-            {bookmarks && bookmarks.length > 0 && (
-              <div className="mt-8 pt-8 border-t">
-                <h3 className="font-bold mb-4">Bookmarks ({bookmarks.length})</h3>
-                <ul className="space-y-2">
-                  {bookmarks.map((bm) => (
-                    <li key={bm.id} className="text-sm">
-                      <span className="font-medium">Page {bm.page}:</span> {bm.text}
-                    </li>
-                  ))}
-                </ul>
+      <main className="max-w-7xl mx-auto px-4 py-8">
+        <UniversalFileViewer
+          fileUrl={book.fileUrl}
+          fileName={book.title}
+          fileFormat={book.format}
+          fontSize={fontSize}
+          theme={theme}
+          onPageChange={handlePageChange}
+        />
+
+        {/* Reading Progress & Bookmarks */}
+        <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
+          {progress && (
+            <Card className="p-4">
+              <h3 className="font-semibold mb-2">Reading Progress</h3>
+              <div className="w-full bg-gray-200 rounded-full h-2 mb-2">
+                <div
+                  className="bg-indigo-600 h-2 rounded-full"
+                  style={{ width: `${progress.percentRead}%` }}
+                ></div>
               </div>
-            )}
-          </div>
-        </Card>
+              <p className="text-sm text-gray-600">{progress.percentRead}% complete</p>
+            </Card>
+          )}
 
-        {/* Navigation Controls */}
-        <div className="flex justify-between items-center">
-          <Button
-            onClick={handlePrevPage}
-            disabled={currentPage === 0}
-            variant="outline"
-          >
-            <ChevronLeft className="w-4 h-4 mr-2" />
-            Previous
-          </Button>
-
-          <div className="text-center">
-            <p className="font-medium">
-              Page {currentPage + 1}
-            </p>
-            <Slider
-              value={[currentPage]}
-              onValueChange={(value) => setCurrentPage(value[0])}
-              min={0}
-              max={100}
-              step={1}
-              className="w-64"
-            />
-          </div>
-
-          <Button
-            onClick={handleNextPage}
-            variant="outline"
-          >
-            Next
-            <ChevronRight className="w-4 h-4 ml-2" />
-          </Button>
+          {bookmarks && bookmarks.length > 0 && (
+            <Card className="p-4">
+              <h3 className="font-semibold mb-2">Bookmarks ({bookmarks.length})</h3>
+              <div className="space-y-1 max-h-32 overflow-y-auto">
+                {bookmarks.map((bm) => (
+                  <p key={bm.id} className="text-sm">
+                    <span className="font-medium">Page {bm.page}:</span> {bm.text}
+                  </p>
+                ))}
+              </div>
+            </Card>
+          )}
         </div>
       </main>
     </div>

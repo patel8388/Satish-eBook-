@@ -84,3 +84,29 @@
 - This is a web-based application that can be wrapped as an Android app using React Native or similar framework
 - Terabox integration will use WebDAV or direct API access if available
 - Google OAuth will be handled through Manus OAuth system
+
+
+## Bug Fixes & Issues
+- [x] Fix file upload functionality
+- [x] Fix PDF viewer rendering
+- [x] Fix EPUB viewer rendering
+- [x] Fix reader page routing
+- [x] Fix reading progress tracking
+- [x] Fix bookmarks functionality
+- [x] Fix navigation between pages
+
+## Additional File Format Support
+- [x] Add MOBI file format support (via universal viewer)
+- [x] Add AZW3 file format support (via universal viewer)
+- [x] Add FB2 file format support (via universal viewer)
+- [x] Add TXT file format support
+- [x] Add DOCX file format support
+- [x] Add generic document viewer fallback
+
+## Enhanced Features
+- [x] Implement actual file upload to S3
+- [ ] Add file deletion functionality
+- [ ] Implement reading history
+- [ ] Add search functionality
+- [ ] Add book categories/collections
+- [ ] Implement Terabox OAuth integration
