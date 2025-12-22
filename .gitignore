@@ -105,3 +105,24 @@ temp/
 *.db
 *.sqlite
 *.sqlite3
+
+# Android
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+android/.idea/
+*.iml
+
+# Secrets (NEVER commit these!)
+*.keystore
+*.jks
+*.p12
+*.pfx
+service-account.json
+credentials.json
+.env.production
+
+# APK and AAB files
+*.apk
+*.aab
